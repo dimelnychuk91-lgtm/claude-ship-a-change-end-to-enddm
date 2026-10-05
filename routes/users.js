@@ -41,16 +41,17 @@ router.put("/:id", (req, res) => {
     return res.status(404).json({ error: "User not found" });
   }
 
-  const { name, email } = req.body;
+  const name = typeof req.body.name === "string" ? req.body.name.trim() : "";
+  const email = typeof req.body.email === "string" ? req.body.email.trim() : "";
 
-  if (typeof name !== "string" || name.trim() === "") {
+  if (!name) {
     return res.status(400).json({ error: "name is required and must be a non-empty string" });
   }
-  if (typeof email !== "string" || !email.includes("@")) {
+  if (!/^[^\s@]+@[^\s@]+$/.test(email)) {
     return res.status(400).json({ error: "email is required and must be a valid email address" });
   }
 
-  const user = store.updateUser(id, { name: name.trim(), email: email.trim() });
+  const user = store.updateUser(id, { name, email });
   res.json(user);
 });
 
